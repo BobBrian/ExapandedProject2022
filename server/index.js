@@ -283,7 +283,34 @@ app.post("/restaurant/:id/review/add", jwtAuth, async (req,res) => {
     }
 })
 
+//Delete Restaurant and all its Reviews
+app.delete("/restaurant/delete/:id",async (req, res)=>{
+    try {
 
+        //Delete a Restaurant and All Reviews Related to it
+        
+    } catch (err) {
+
+        console.error(err.message)
+
+    }
+})
+
+//DELETE Reviews
+app.delete("/review/delete/:id",async (req, res)=>{
+    try {
+
+        //Delete a Restaurant and All Reviews Related to it
+        const {id} = req.params;
+        const deletereview = await pool.query("DELETE FROM tableReview WHERE reviewid = $1 ",[id]);
+        res.json("Editor was deleted");
+        
+    } catch (err) {
+
+        console.error(err.message)
+
+    }
+})
 
 // ======================================================================================================================================================================
 // ======================================================================================================================================================================
