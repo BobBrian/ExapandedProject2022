@@ -7,6 +7,7 @@ import Login from './Login';
 import Registration from './Registration';
 import Landing from './Landing';
 import Dashboard from './Components/Dashboard';
+import EditorResturantDetails from './Components/editor/EditorResturantDetails';
 toast.configure();
 //used for the main routing
 
@@ -50,6 +51,7 @@ const App = () => {
           <Route exact path="/register" render={props => !isAuthenticated ? (<Registration {...props} setAuth={setAuth}/> ) : ( <Redirect to="/landing" />)}/>  
           <Route exact path="/landing" render={props => !isAuthenticated ? (<Landing {...props} setAuth={setAuth}/> ) : ( <Redirect to="/landing" />)}/>  
           <Route exact path="/dashboard" render={props => !isAuthenticated ? (<Dashboard {...props} setAuth={setAuth}/> ) : ( <Redirect to="/login" />)}/>  
+          <Route exact path="/restaurant/update/:id" render={props => !isAuthenticated ? (<EditorResturantDetails {...props} setAuth={setAuth}/> ) : ( <Redirect to="/login" />)}/> 
         </Switch>
       </Router>
     </UserProvider>

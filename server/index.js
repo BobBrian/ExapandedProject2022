@@ -218,7 +218,7 @@ app.get("/reviews/get/all", async (req, res) => {
 })
 
 // Get A Specific Restaurant (GET)
-app.get("/restaurant/get/:id", async (req,res)=>{
+app.get("/restaurant/review/get/:id", async (req,res)=>{
 
     try {
 
