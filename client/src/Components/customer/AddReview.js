@@ -2,15 +2,16 @@ import React,{useState} from 'react'
 import { useLocation, useParams, useHistory } from "react-router-dom";
 
 function AddReview() {
-  const { id } = useParams();
+  const { idA, idB } = useParams();
   const location = useLocation();
   console.log(location);
   const history = useHistory();
-  console.log(id);
+  console.log(idA, idB);
 
   //This is the Same as Input 
   //The Role of this is the Same as InputTable.js File
-
+  ///restaurant/:idA/:idB/review/add
+    
   const [name, setName] = useState("")
   const [review, setReview] = useState("")
   const [rating, setRating] = useState("Price Range")
@@ -19,7 +20,7 @@ function AddReview() {
       e.preventDefault();
       try {
           const body = {name, review , rating}
-          const response = await fetch(`http://localhost:5000/restaurant/${id}/review/add`,{
+          const response = await fetch(`http://localhost:5000/restaurant/${idA}/${idB}/review/add`,{
               method: "POST",
               headers: {"Content-Type": "application/json"},
               body: JSON.stringify(body)

@@ -1,5 +1,6 @@
 import React, {useEffect, useState, Fragment, useContext}from 'react'
 import { UserContext } from '../Context/UserContext'
+import {useHistory} from "react-router-dom"
 
 function CustomerListRestaurant() {
 
@@ -12,18 +13,24 @@ function CustomerListRestaurant() {
     fetchData();
   },[]);
 
+  let history = useHistory()
+
   const fetchData = async () =>{
     try {
-      const response = await  fetch("http://localhost:5000/restaurant/get/all") // This is the All gET
-      const jsonData = await response.json()
-      console.log(jsonData);
-      setRest(jsonData);
-  } catch (err) 
-  {
-      console.error(err.message)
-  }
+     const response = await  fetch("http://localhost:5000/restaurant/get/all")
+     const jsonData = await response.json()
+     console.log(jsonData);
+     setRest(jsonData);
+    } catch (err) 
+    {
+     console.error(err.message)
+    }
 
   };
+
+  const customertabledetails = (id) =>{
+    history.push(`/list/editor/restaurant/details/${id}`)
+  }
 
   <Fragment>
       <table className='table table-hover table-dark'>
@@ -41,7 +48,7 @@ function CustomerListRestaurant() {
                       <td>{restX.restaurantname}</td>
                       <td>{restX.location}</td>
                       <td>{"$".repeat(restX.pricerange)}</td>
-                      <td><button className='btn btn-warning' onClick={() => tabledetails(restX.restaurantid)} > Details</button></td>
+                      <td><button className='btn btn-warning' onClick={() => customertabledetails(restX.restaurantid)} > Details</button></td>
                   </tr>
               ))}
 

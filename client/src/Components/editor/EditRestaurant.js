@@ -7,23 +7,24 @@ function EditRestaurant({restX}) {
   const [pricerange, setPriceRange] = useState(restX.pricerange)
 
   const updateRestaurants = async(e) =>{
-    e.preventDefault()
+        e.preventDefault()
 
-    try {
+        try {
 
-        const body = {restaurantname,location,pricerange }
-        const response = await fetch(`http://localhost:5000/restaurant/update/${restX.restaurantid}`,{
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
-        })
-        window.location = "/"
-    } catch (err) {
+            const body = {restaurantname,location,pricerange }
+            //Check this One and be sure to Change it
+            const response = await fetch(`http://localhost:5000/restaurant/update/${restX.restaurantid}`,{
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(body)
+            })
+            window.location = "/"
+        } catch (err) {
 
-        console.error(err.message)
-        
+            console.error(err.message)
+            
+        }
     }
-}
 
 
 return (

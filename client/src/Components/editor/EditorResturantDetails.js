@@ -11,12 +11,12 @@ function EditorResturantDetails() {
   const {selectreview, setSelectReview} = useContext(UserContext)
 
   useEffect(() =>{
-    fetchData();
-    fetchDataB();
+    getSpecificRestaurant();
+    getAllSpecificRestaurantReviews ();
   },[]);
 
-  //This is to get the Resturant Name
-  const fetchData = async () =>{
+  //This is to get the  Specific Resturants Name
+  const getSpecificRestaurant = async () =>{
         try 
         {
           const response = await  fetch(`http://localhost:5000/restaurant/update/${id}`)
@@ -32,7 +32,8 @@ function EditorResturantDetails() {
   
   }; 
 
-  const fetchDataB = async () =>{
+  //Shows all the Reviews of a Specific Restaurant
+  const getAllSpecificRestaurantReviews = async () =>{
     try 
     {
       const response = await  fetch(`http://localhost:5000/restaurant/review/get/${id}`) 
@@ -42,11 +43,25 @@ function EditorResturantDetails() {
 
 
     } catch (err) 
-  {
+    {
       console.error(err.message)
-  }
+    }
 
-};
+  };
+
+  //Delete Reviews
+  const deletereview = async (id) =>
+  {
+    try {
+      const deleteReview = await fetch(`http://localhost:5000/restaurant/editor/delete/${id}`,{
+        method: "DELETE"
+      })
+      setSelectReview(selectreview.filter(selectreview => selectreview.id !== id))
+      
+    } catch (err) {
+      console.error(err.message)  
+    }
+  }
 
 
 return (
@@ -59,6 +74,11 @@ return (
       <div className="row row-cols-3 mb-2">
       {selectreview.map(selectreviewX =>(
           <div key={selectreviewX.reviewid} className="card text-white bg-primary mb-3 mr-4" style={{ maxWidth: "30%" }}>
+              <div className="card-header d-flex justify-content-between">
+                <button className='btn btn-warning' onClick={() => deletereview(selectreviewX.reviewid)} > 
+                  Delte Details
+                </button>
+              </div>
               <div className="card-header d-flex justify-content-between">
                 <span>{selectreviewX.name} </span>
               </div>

@@ -6,7 +6,7 @@ function AddRestaurant() {
   const [location, setLocation] = useState("")
   const [pricerange, setPriceRange] = useState("Price Range")
 
-  const handleSubmit = async e =>{
+  const addRestaurant = async e =>{
     e.preventDefault();
     try {
         const body = {restaurantname,location,pricerange }
@@ -23,7 +23,7 @@ function AddRestaurant() {
         console.error(err.message)
         
     }
-}
+  }
 
 
 return (
@@ -48,7 +48,7 @@ return (
             <option value="5">$$$$$</option>
           </select>
         </div>
-        <button onClick={handleSubmit} type="submit" className="btn btn-primary" > Add </button>
+        <button onClick={addRestaurant} type="submit" className="btn btn-primary" > Add </button>
       </div>
     </form>
   </div>

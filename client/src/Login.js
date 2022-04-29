@@ -18,7 +18,6 @@ const Login = ({setAuth}) => {
             });
 
             const parseRes = await response.json()
-
             if(parseRes.token){
                 //console.log(parsRes)
                 localStorage.setItem("token", parseRes.token)
@@ -28,13 +27,9 @@ const Login = ({setAuth}) => {
             }else{
                 setAuth(false)
                 toast.error(parseRes)
-            }
-
-            
-            
+            }   
         } catch (err) {
-            console.error(err.message)
-            
+            console.error(err.message)    
         }
     }
 
@@ -44,8 +39,12 @@ const Login = ({setAuth}) => {
         <Fragment>
             <h1>Login Page</h1>
             <form>
-                <input type="text" name="email" value={email} placeholder="email" onChange={e => setEmail(e.target.value)} className="form-control my-3"/>
-                <input type="password" name="password" value={password} placeholder="password" onChange={e => setPassword(e.target.value)} className="form-control my-3"/>
+                <input type="text" name="email" value={email} placeholder="email" 
+                onChange={e => setEmail(e.target.value)} className="form-control my-3"/>
+
+                <input type="password" name="password" value={password} placeholder="password" 
+                onChange={e => setPassword(e.target.value)} className="form-control my-3"/>
+                
                 <button onClick={handleLogin} type="submit" className="btn btn-success btn-block" > Login</button>
             </form>
             <Link to="/register">Register</Link>

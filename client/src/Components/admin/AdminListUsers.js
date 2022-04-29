@@ -1,16 +1,19 @@
 import React, {useEffect, useState, Fragment, useContext}from 'react'
 import { UserContext } from '../Context/UserContext'
+import {useHistory} from "react-router-dom"
 
-function ListUsers() {
+function AdminListUsers() {
 
   const {user, setUser} = useContext(UserContext)
 
+  let history = useHistory()
+
   useEffect(() =>{
     
-    fetchData();
+    getAllUsers();
   },[]);
 
-  const fetchData = async () =>{
+  const getAllUsers = async () =>{
     try {
       const response = await  fetch("http://localhost:5000/admin/get/all") // This is the All gET
       const jsonData = await response.json()
@@ -23,8 +26,34 @@ function ListUsers() {
 
   };
 
+  const deleteuser = async (id) =>
+  {
+    try {
+      const deleteuser = await fetch(`http://localhost:5000/admin/delete/${id}`,{
+        method: "DELETE"
+      })
+      setUser(rest.filter(rest => rest.id !== id))
+      
+    } catch (err) {
+      console.error(err.message)  
+    }
+  }
+
+  const adminlistrestaurnantdetails = () =>{
+    history.push("/list/admin/restaurant/all")
+  }
   
   <Fragment>
+      <div>
+
+      <td>
+        <button className='btn btn-warning' onClick={() => adminlistrestaurnantdetails()} >
+         List Restaurants
+        </button>
+      </td>
+
+      </div>
+
       <table className='table table-hover table-dark'>
           <thead>
               <tr className="bg-primary">
@@ -35,18 +64,17 @@ function ListUsers() {
               </tr>  
           </thead>
           <tbody>
-              {user.map(userX =>(
+            {user.map(userX =>(
                   <tr key={userX.userid}>
                       <td>{userX.name}</td>
                       <td>{userX.surname}</td>
                       <td>{userX.email}</td>   
-                      <td><button className='btn btn-danger' onClick={(e) => deleterestaurant(userX.userid)}>Delete</button></td>                  
+                      <td><button className='btn btn-danger' onClick={(e) => deleteuser(userX.userid)}>Delete</button></td>                  
                   </tr>
-              ))}
-
+            ))}
           </tbody>
       </table>
   </Fragment>
 }
 
-export default ListUsers
+export default AdminListUsers

@@ -167,7 +167,9 @@ app.post("/restaurant/add", async (req,res)=>{
         
     }
 })
-// Update Restaurant Details (PUT)
+
+// Update Restaurant (PUT)
+// Use restaurantid
 app.put("/restaurant/update/:id", async (req,res)=>{
     try {
 
@@ -218,12 +220,12 @@ app.get("/reviews/get/all", async (req, res) => {
 })
 
 // Get A Specific Restaurant (GET)
-app.get("/restaurant/review/get/:id", async (req,res)=>{
+app.get("/restaurant/get/:id", async (req,res)=>{
 
     try {
 
         const {restaurantid} = req.params;
-        const allresspec = await pool.query("SELECT * FROM tableRestaurant AS u LEFT JOIN tableReview AS t ON u.restaurantid = t.IdB WHERE u.restaurantid  = $1",[restaurantid]);
+        const allresspec = await pool.query("SELECT * FROM tableRestaurant AS u LEFT JOIN tableReview AS t ON u.restaurantid = t.restaurantid WHERE u.restaurantid  = $1",[restaurantid]);
         res.json(allresspec.rows);
         
     } catch (err) {
@@ -234,25 +236,27 @@ app.get("/restaurant/review/get/:id", async (req,res)=>{
 })
 
 //Get All Reviews for a Specific Restuarnat
-app.get("/review/get/restaurant/:id", async (req,res) => {
+app.get("/restaurant/get/reviews/:id", async (req,res) => {
 
     //RIGHT Join
     try {
 
-        const {id} = req.params
-        const allrevspec = await pool.query("SELECT t.name, t.review, t.rating , u.restaurantname FROM tableReview AS t Right JOIN tableRestaurant AS u ON t.restaurantid = u.restaurantid WHERE t.restaurantid = $1",[id]);
-        res.json(allrevspec.rows);
+        const {reviewid} = req.params
+        const allspecificreview = await pool.query("SELECT * FROM tableReview as u LEFT Join tabelRestaurant as t ON u.restaurntid = t.restaurantid WHERE u.restaurantid  = $1  ",[reviewid]);
+        res.json(allspecificreview.rows);
     } catch (err) {
         console.error(err.message)
     }
 
 })
 
-//Get All Reviews for a Specific Customer
+//Get All Reviews for a Specific Customer on a Specfic Restaurnt
+//UNDER CONSTRUCTION
 app.get("/review/get/customer/:id", jwtAuth, async (req, res) => {
    
     try {
         
+
         const user = await pool.query(
             "SELECT u.name, u.surname, t.name, t.review , t.rating FROM tableUser AS u LEFT JOIN tableReview AS t ON u.userid = t.userid WHERE u.userid= $1",
             [req.user.id]
@@ -265,34 +269,24 @@ app.get("/review/get/customer/:id", jwtAuth, async (req, res) => {
     }
     
 })
-//ADD Reviews Based on Restuarant by a Specific Customer
-app.post("/restaurant/:id/review/add", jwtAuth, async (req,res) => {
-    try {
-        const {name, review , rating } = req.body;
-        const {id} = req.params;
-  
-        const newtableB = await pool.query("INSERT INTO tableB (IdA, IdB, name, review , rating) values ($1, $2, $3, $4) RETURNING * ",
-        [id, req.user.id, name, review , rating]);
-  
-        res.json(newtableB.rows[0]);
-  
-    } catch (err) {
-        
-        console.error(err.message)
-     
-    }
-})
+
+// ======================================================================================================================================================================
+// ======================================================================================================================================================================
+
+
 
 //Delete Restaurant and all its Reviews
-app.delete("/restaurant/delete/:id",async (req, res)=>{
+//
+app.delete("/restaurant/delete/:id", async (req,res)=>{
     try {
-
-        //Delete a Restaurant and All Reviews Related to it
+        
+        const {restaurantid} = req.params;
+        const deleteRestaurant = await pool.query("DELETE FROM tableRestaurant WHERE restaurantid = $1",[restaurantid]);
+        res.json("Restaurant was deleted");
         
     } catch (err) {
-
         console.error(err.message)
-
+        
     }
 })
 
@@ -303,7 +297,7 @@ app.delete("/review/delete/:id",async (req, res)=>{
         //Delete a Restaurant and All Reviews Related to it
         const {id} = req.params;
         const deletereview = await pool.query("DELETE FROM tableReview WHERE reviewid = $1 ",[id]);
-        res.json("Editor was deleted");
+        res.json("Review  was deleted");
         
     } catch (err) {
 
@@ -311,10 +305,6 @@ app.delete("/review/delete/:id",async (req, res)=>{
 
     }
 })
-
-// ======================================================================================================================================================================
-// ======================================================================================================================================================================
-
 
 // Get All Customers & Editors(GET)
 app.get("/admin/get/all", async (req,res)=>{
@@ -364,13 +354,15 @@ app.post("/admin/addeditor",[check("email", "Please Provide a Valid Email").isEm
     }
 })
 
-// Delete Editor(DELETE)
-app.delete("/admin/delete/:id", async (req,res)=>{
+
+// Delete Customer and all there Reviews(DELETE)
+// Use userid
+app.delete("/admin/delete/customer/:id", async (req,res)=>{
     try {
         
         const {userid} = req.params;
-        const deleteEditor = await pool.query("DELETE FROM tableUser WHERE userid = $1 and role='Editor'  ",[userid]);
-        res.json("Editor was deleted");
+        const deleteCutomer = await pool.query("DELETE FROM tableUser WHERE userid = $1",[userid]);
+        res.json("User was deleted");
         
     } catch (err) {
         console.error(err.message)
@@ -378,15 +370,22 @@ app.delete("/admin/delete/:id", async (req,res)=>{
     }
 })
 
-// Delete Customer(DELETE)
-app.delete("/admin/delete/:id", async (req,res)=>{
+//Add Reviews
+//VERY SPECIAL , WATCH THIS ONE FOR TESTING
+app.post("/restaurant/:idA/:idB/review/add", async(req,res)=>{
     try {
-        
-        const {userid} = req.params;
-        const deleteCutomer = await pool.query("DELETE FROM tableUser WHERE userid = $1 and role='Customer'  ",[userid]);
-        res.json("Customer was deleted");
+
+        const {name, review , rating } = req.body;
+        const {idA, idB} = req.params;
+
+        const newtableB = await pool.query("INSERT INTO tableReview (userid, restaurantid ,name, review , rating) values ($1, $2, $3, $4, $5) RETURNING * ",
+        [idA, idB, name, review , rating]);
+  
+        res.json(newtableB.rows[0]);
+
         
     } catch (err) {
+
         console.error(err.message)
         
     }

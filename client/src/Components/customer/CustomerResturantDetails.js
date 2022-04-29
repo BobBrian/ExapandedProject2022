@@ -11,15 +11,15 @@ function CustomerResturantDetails() {
   const {selectreview, setSelectReview} = useContext(UserContext)
 
   useEffect(() =>{
-    fetchData();
-    fetchDataB();
+    getSpecificRestaurant();
+    getAllReviews();
   },[]);
 
   //This is to get the Resturant Name
-  const fetchData = async () =>{
+  const getSpecificRestaurant = async () =>{
         try 
         {
-          const response = await  fetch(`http://localhost:5000/restaurant/update/${id}`)
+          const response = await  fetch(`http://localhost:5000/restaurant/get/${id}`)
           const jsonData = await response.json()
           console.log(jsonData);
           setSelectedRest(jsonData);
@@ -33,21 +33,22 @@ function CustomerResturantDetails() {
   }; 
 
   //This is to Show all the Reviews Realted to that Particular Restaurant
-  const fetchDataB = async () =>{
+  const getAllReviews = async () =>{
     try 
     {
-      const response = await  fetch(`http://localhost:5000/restaurant/review/get/${id}`) 
+      const response = await  fetch(`http://localhost:5000/restaurant/get/reviews/${id}`) 
       const jsonData = await response.json()
       console.log(jsonData);
       setSelectReview(jsonData);
 
 
-    } catch (err) 
-  {
-      console.error(err.message)
-  }
+    } catch (err)
+     
+    {
+        console.error(err.message)
+    }
 
-};
+  };
 
 
 return (

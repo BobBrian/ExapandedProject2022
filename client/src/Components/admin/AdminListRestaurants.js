@@ -1,13 +1,14 @@
-import React, {useEffect,  Fragment, useContext}from 'react'
-import { UserContext } from '.../Context/UserContext'
-import {useHistory} from "react-router-dom"
-import EditTableData from './EditTableData'
+import React, {useEffect,Fragment, useContext}from 'react'
+import React, {useEffect, useState, Fragment, useContext}from 'react'
+import UserContext from '.../Context/UserContext'
 
-function ListRestaurant() {
 
+
+function AdminListRestaurants() {
   const {rest, setRest} = useContext(UserContext)
 
-  let history = useHistory()
+
+
 
   useEffect(() =>{
     
@@ -40,9 +41,7 @@ function ListRestaurant() {
     }
   }
 
-  const editortabledetails = (id) =>{
-    history.push(`/list/editor/restaurant/details/${id}`)
-  }
+
 
 return (
     <Fragment>
@@ -52,8 +51,6 @@ return (
                     <th>Restaurant</th>
                     <th>Location</th>
                     <th>Price Range</th>
-                    <th>Details</th>
-                    <th>Edit</th>
                     <th>Delete</th>
                 </tr>  
             </thead>
@@ -63,17 +60,13 @@ return (
                         <td>{restX.restaurantname}</td>
                         <td>{restX.location}</td>
                         <td>{"$".repeat(restX.pricerange)}</td>
-                        <td><button className='btn btn-warning' onClick={() => editortabledetails(restX.restaurantid)} > Details</button></td>
-                        <td> <EditTableData  restX={restX}/> </td>
                         <td><button className='btn btn-danger' onClick={(e) => deleterestaurant(restX.restaurantid)}>Delete</button></td>
                     </tr>
                 ))}
-
             </tbody>
-
         </table>
     </Fragment>
   )
 }
 
-export default ListRestaurant
+export default AdminListRestaurants

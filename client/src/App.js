@@ -8,6 +8,8 @@ import Registration from './Registration';
 import Landing from './Landing';
 import Dashboard from './Components/Dashboard';
 import EditorResturantDetails from './Components/editor/EditorResturantDetails';
+import AdminListRestaurants from './Components/admin/AdminListRestaurants';
+import CustomerResturantDetails from './Components/customer/CustomerResturantDetails';
 toast.configure();
 //used for the main routing
 
@@ -47,11 +49,28 @@ const App = () => {
     <UserProvider>
       <Router>
         <Switch>
-          <Route exact path="/login" render={props => !isAuthenticated ? (<Login {...props} setAuth={setAuth}/> ) : ( <Redirect to="/landing" />)}/>  
-          <Route exact path="/register" render={props => !isAuthenticated ? (<Registration {...props} setAuth={setAuth}/> ) : ( <Redirect to="/landing" />)}/>  
-          <Route exact path="/landing" render={props => !isAuthenticated ? (<Landing {...props} setAuth={setAuth}/> ) : ( <Redirect to="/landing" />)}/>  
-          <Route exact path="/dashboard" render={props => !isAuthenticated ? (<Dashboard {...props} setAuth={setAuth}/> ) : ( <Redirect to="/login" />)}/>  
-          <Route exact path="/restaurant/update/:id" render={props => !isAuthenticated ? (<EditorResturantDetails {...props} setAuth={setAuth}/> ) : ( <Redirect to="/login" />)}/> 
+
+          <Route exact path="/landing" component={Landing}/> 
+
+          <Route exact path="/login" render={props => !isAuthenticated ? (<Login {...props} setAuth={setAuth}/> ) : 
+          ( <Redirect to="/landing" />)}/>  
+          
+          <Route exact path="/register" render={props => !isAuthenticated ? (<Registration {...props} setAuth={setAuth}/> ) : 
+          ( <Redirect to="/login" />)}/>
+
+          <Route exact path="/dashboard" render={props => !isAuthenticated ? (<Dashboard {...props} setAuth={setAuth}/> ) : 
+          ( <Redirect to="/login" />)}/>  
+
+          <Route exact path="/list/editor/restaurant/details/:id" render={props => !isAuthenticated ? 
+          (<EditorResturantDetails {...props} setAuth={setAuth}/> ) : ( <Redirect to="/login" />)}/>
+
+          <Route exact path="/list/customer/restaurant/details/:id" render={props => !isAuthenticated ? 
+          (<CustomerResturantDetails {...props} setAuth={setAuth} /> ) : ( <Redirect to="/login" />)}/> 
+
+          <Route exact path="/list/admin/restaurant/all" render={props => !isAuthenticated ? 
+          (<AdminListRestaurants {...props} setAuth={setAuth}/> ) : ( <Redirect to="/login" />)}/> 
+ 
+
         </Switch>
       </Router>
     </UserProvider>

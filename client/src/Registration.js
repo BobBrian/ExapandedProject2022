@@ -46,11 +46,21 @@ const Register = ({setAuth}) => {
     <Fragment>
        <h1>Register Page</h1>
        <form>
-            <input type="text" name="name" value={name} placeholder="name" onChange={e => setName(e.target.value)} className="form-control my-3"/>
-            <input type="text" name="name" value={surname} placeholder="name" onChange={e => setSurname(e.target.value)} className="form-control my-3"/>
-            <input type="text" name="name" value={age} placeholder="name" onChange={e => setAge(e.target.value)} className="form-control my-3"/>
-           <input type="text" name="email" value={email} placeholder="email" onChange={e => setEmail(e.target.value)} className="form-control my-3"/>
-           <input type="password" name="password" value={password} placeholder="password" onChange={e => setPassword(e.target.value)} className="form-control my-3"/>
+            <input type="text" name="name" value={name} placeholder="name" 
+            onChange={e => setName(e.target.value)} className="form-control my-3"/>
+
+            <input type="text" name="name" value={surname} placeholder="name" 
+            onChange={e => setSurname(e.target.value)} className="form-control my-3"/>
+
+            <input type="text" name="name" value={age} placeholder="name" 
+            onChange={e => setAge(e.target.value)} className="form-control my-3"/>
+
+           <input type="text" name="email" value={email} placeholder="email" 
+           onChange={e => setEmail(e.target.value)} className="form-control my-3"/>
+
+           <input type="password" name="password" value={password} placeholder="password" 
+           onChange={e => setPassword(e.target.value)} className="form-control my-3"/>
+           
            <button onClick={handleSubmit} type="submit" className="btn btn-success btn-block" > Register </button>
        </form>
        <Link to="/login">Login</Link>

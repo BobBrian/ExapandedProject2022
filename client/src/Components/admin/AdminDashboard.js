@@ -1,13 +1,14 @@
 import React,{Fragment} from 'react'
 import AddEditor from './AddEditor'
-import ListUsers from './ListUsers'
+import AdminListUsers from './AdminListUsers'
+
 
 function AdminDashboard() {
   return (
     <Fragment>
       <div>
         <AddEditor/>
-        <ListUsers/>
+        <AdminListUsers/>
       </div>
     </Fragment>
   )
