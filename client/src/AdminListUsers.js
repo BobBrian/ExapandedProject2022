@@ -1,6 +1,6 @@
-import React, {useEffect, useState, Fragment, useContext}from 'react'
-import { UserContext } from '../Context/UserContext'
+import React, {useEffect,  Fragment, useContext}from 'react'
 import {useHistory} from "react-router-dom"
+import { UserContext } from './Context/UserContext';
 
 function AdminListUsers() {
 
@@ -32,7 +32,7 @@ function AdminListUsers() {
       const deleteuser = await fetch(`http://localhost:5000/admin/delete/${id}`,{
         method: "DELETE"
       })
-      setUser(rest.filter(rest => rest.id !== id))
+      setUser(user.filter(user => user.id !== id))
       
     } catch (err) {
       console.error(err.message)  
@@ -42,18 +42,17 @@ function AdminListUsers() {
   const adminlistrestaurnantdetails = () =>{
     history.push("/list/admin/restaurant/all")
   }
-  
-  <Fragment>
-      <div>
 
+  return (
+    <Fragment>
+      <div>
       <td>
         <button className='btn btn-warning' onClick={() => adminlistrestaurnantdetails()} >
-         List Restaurants
+        List Restaurants
         </button>
       </td>
 
       </div>
-
       <table className='table table-hover table-dark'>
           <thead>
               <tr className="bg-primary">
@@ -65,16 +64,17 @@ function AdminListUsers() {
           </thead>
           <tbody>
             {user.map(userX =>(
-                  <tr key={userX.userid}>
-                      <td>{userX.name}</td>
-                      <td>{userX.surname}</td>
-                      <td>{userX.email}</td>   
-                      <td><button className='btn btn-danger' onClick={(e) => deleteuser(userX.userid)}>Delete</button></td>                  
-                  </tr>
+                <tr key={userX.user_id}>
+                    <td>{userX.name}</td>
+                    <td>{userX.surname}</td>
+                    <td>{userX.email}</td>   
+                    <td><button className='btn btn-danger' onClick={(e) => deleteuser(userX.userid)}>Delete</button></td>                  
+                </tr>
             ))}
           </tbody>
       </table>
-  </Fragment>
+    </Fragment>
+  )
 }
 
 export default AdminListUsers

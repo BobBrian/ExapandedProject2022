@@ -1,7 +1,7 @@
 const JWT = require('jsonwebtoken')
 
 module.exports = async (req,res,next) =>{
-    const token  = req.header('token')
+    const token  = req.header('jwt_token')
     if(!token){
         return res.status(400).json({
             "errors":[
@@ -16,7 +16,7 @@ module.exports = async (req,res,next) =>{
 
     const verify = JWT.verify(token,"MEGARANGER123")
     req.user = verify.user
-    next()
+    next();
         
    } catch (err) {
 

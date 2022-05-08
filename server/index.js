@@ -5,9 +5,10 @@ const cors = require("cors");
 const pool = require("./db"); 
 const bcrypt = require("bcrypt");
 const {check , validationResult} = require ("express-validator")
-const jwt = require('jsonwebtoken') 
-const jwtAuth = require("./checkAuth")
+const jwtGenerator = require("./utils/jwtGenerator");
+const authorize = require("./middleware/authorize");
 const app = express();
+
 
 
 //Middleware
@@ -34,23 +35,22 @@ app.post("/restaurant/register",[check("email", "Please Provide a Valid Email").
         }
 
         //Validation Check to Ensure that A User Already Exists
-        const presentuser = await pool.query("SELECT * FROM tableUser WHERE email = $1", [email]);
+        const presentuser = await pool.query("SELECT * FROM tableuser WHERE email = $1", [email]);
 
         if (presentuser.rows.length !== 0) {
-               return res.status(401).json("User already exist!");
+            return res.status(401).json("User already exist!");
         }
    
         const hashedpassword = await bcrypt.hash(password, 10)
    
         // To do auto Increments with INSERT SET THE VALUE TO NULL and Leave it OUT
-        let users = await pool.query("INSERT INTO tableUser (name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Customer') RETURNING *", [name, surname, age, email, hashedpassword ]);
+        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Customer') RETURNING *", [name, surname, age, email, hashedpassword ]);
            
         console.log(email, password)
-        // JWT Token Production 
-        const token  = jwtGenerator(users.rows[0].userid)
-   
-        // res.json(users.rows[0]);
-        res.json({token})
+         
+        const jwtToken = jwtGenerator(newUser.rows[0].user_id);
+
+        return res.json({ jwtToken });
 
         
     } catch (err) {
@@ -63,9 +63,9 @@ app.post("/restaurant/register",[check("email", "Please Provide a Valid Email").
 app.post("/restaurant/login", async (req,res)=>{
 
     try {
-        const {password, email} = req.body
+        const  { email, password } = req.body
     
-        const user = await pool.query("SELECT * FROM tableUser WHERE email = $1", [email]);
+        const user = await pool.query("SELECT * FROM tableuser WHERE email = $1", [email]);
 
         if (user.rows.length === 0) {
             return res.status(422).json({
@@ -94,10 +94,8 @@ app.post("/restaurant/login", async (req,res)=>{
 
         console.log(email, password)
         // JWT Token Production 
-        const token  = jwt.sign({email},"MEGARANGER123")
-
-        // res.json(users.rows[0]);
-        res.json({token})
+        const jwtToken = jwtGenerator(user.rows[0].user_id);
+        return res.json({ jwtToken });
         
     } catch (err) {
 
@@ -107,36 +105,8 @@ app.post("/restaurant/login", async (req,res)=>{
 
 })
 
-// Get Username (GET)
-app.get("/restaurant/getusername",jwtAuth, async (req,res)=>{
-
-    try {
-
-        const getuser = await pool.query("SELECT name FROM  tableUser WHERE email = $1",[req.user]);
-        res.json(getuser.rows[0]);
-
-    } catch (err) {
-        console.error(err.message)
-    }
-    
-
-})
-// Get Role (GET)
-app.get("/restaurant/getrole",jwtAuth, async (req,res)=>{
-
-    try {
-
-        const getrole = await pool.query("SELECT role FROM  tableUser WHERE email = $1",[req.user]);
-        res.json(getrole.rows[0]);
-
-    } catch (err) {
-        console.error(err.message)
-    }
-    
-
-})
 // Verify JWT (GET)
-app.get("/restaurant/verify", jwtAuth, async (req,res)=>{
+app.get("/restaurant/verify", authorize, async (req,res)=>{
 
     try {
 
@@ -152,46 +122,37 @@ app.get("/restaurant/verify", jwtAuth, async (req,res)=>{
 })
 
 
-// Add a Restaurant (POST)
-app.post("/restaurant/add", async (req,res)=>{
+//GET UserName
+app.get("/res/dashboard/name", authorize, async (req,res)=>{
+
     try {
-
-        const {restaurantname,location,pricerange } = req.body;
-
-        const addres = await pool.query("INSERT INTO tableRestaurant (restaurantname, location, pricerange ) VALUES($1, $2, $3) RETURNING * ",
-        [restaurantname , location, pricerange]);
-        res.json(addres.rows[0]);
+      const public = await pool.query("SELECT name FROM  tableuser WHERE user_id = $1",[req.user.id]);
+     
+      res.json(public.rows[0]);
+      
         
     } catch (err) {
         console.error(err.message)
-        
     }
+
 })
 
-// Update Restaurant (PUT)
-// Use restaurantid
-app.put("/restaurant/update/:id", async (req,res)=>{
+//GET UserRole
+app.get("/res/dashboard/role", authorize, async (req,res)=>{
+
     try {
-
-        const {restaurantid} = req.params;
-
-        const {restaurantname,location,pricerange } = req.body;
-        const UpdatetableA = await pool.query("UPDATE tableRestaurant SET restaurantname = $1, location = $2, pricerange = $3 WHERE restaurantid = $4",
-        [restaurantname,location,pricerange,restaurantid]);
-        
-        res.json("The List was Updated");
+      const public = await pool.query("SELECT role FROM  tableuser WHERE user_id = $1",[req.user.id]);
+     
+      res.json(public.rows[0]);
+      
         
     } catch (err) {
         console.error(err.message)
-        
     }
+
 })
 
-
-// ======================================================================================================================================================================
-// ======================================================================================================================================================================
-
-// Get All Restaurants  (GET)
+//GET All Restaurants
 app.get("/restaurant/get/all", async (req,res)=>{
 
     //This is to display all the Resturants in a Table
@@ -207,81 +168,59 @@ app.get("/restaurant/get/all", async (req,res)=>{
 
 })
 
-//GET ALL Reviews 
-app.get("/reviews/get/all", async (req, res) => {
-    try {
-        
-        const tableB = await pool.query("SELECT * FROM tableReview ");
-        res.json(tableB.rows[0]);
-        
-    } catch (err) {
-        console.error(err.message)
-    }
-})
-
-// Get A Specific Restaurant (GET)
-app.get("/restaurant/get/:id", async (req,res)=>{
-
+//Get all Users
+app.get("/admin/get/all", async (req,res)=>{
     try {
 
-        const {restaurantid} = req.params;
-        const allresspec = await pool.query("SELECT * FROM tableRestaurant AS u LEFT JOIN tableReview AS t ON u.restaurantid = t.restaurantid WHERE u.restaurantid  = $1",[restaurantid]);
-        res.json(allresspec.rows);
+        const allUsers = await pool.query("SELECT * FROM tableUser WHERE role ='Customer' AND role ='Editor'");
+        res.json(allUsers.rows);
         
     } catch (err) {
         console.error(err.message)
         
     }
-    
 })
 
-//Get All Reviews for a Specific Restuarnat
-app.get("/restaurant/get/reviews/:id", async (req,res) => {
-
-    //RIGHT Join
+//Add Resturant
+app.post("/restaurant/add", async (req,res)=>{
     try {
 
-        const {reviewid} = req.params
-        const allspecificreview = await pool.query("SELECT * FROM tableReview as u LEFT Join tabelRestaurant as t ON u.restaurntid = t.restaurantid WHERE u.restaurantid  = $1  ",[reviewid]);
-        res.json(allspecificreview.rows);
+        const {restaurantname,location,pricerange } = req.body;
+
+        const addres = await pool.query("INSERT INTO tableRestaurant (restaurantname, location, pricerange ) VALUES ($1, $2, $3) RETURNING * ",
+        [restaurantname , location, pricerange]);
+        res.json(addres.rows[0]);
+        
     } catch (err) {
         console.error(err.message)
+        
     }
-
 })
 
-//Get All Reviews for a Specific Customer on a Specfic Restaurnt
-//UNDER CONSTRUCTION
-app.get("/review/get/customer/:id", jwtAuth, async (req, res) => {
-   
+//Update a Restaurant
+app.put("/restaurant/update/:id", async (req,res)=>{
     try {
+
+        const {id} = req.params;
+
+        const {restaurantname,location,pricerange } = req.body;
+        const UpdatetableA = await pool.query("UPDATE tableRestaurant SET restaurantname = $1, location = $2, pricerange = $3 WHERE restaurant_id = $4",
+        [restaurantname,location,pricerange,id]);
         
-
-        const user = await pool.query(
-            "SELECT u.name, u.surname, t.name, t.review , t.rating FROM tableUser AS u LEFT JOIN tableReview AS t ON u.userid = t.userid WHERE u.userid= $1",
-            [req.user.id]
-        );
-      
-         res.json(user.rows);
-
-    } catch (error) {
+        res.json("The List was Updated");
+        
+    } catch (err) {
+        console.error(err.message)
         
     }
-    
 })
 
-// ======================================================================================================================================================================
-// ======================================================================================================================================================================
-
-
-
-//Delete Restaurant and all its Reviews
-//
+//Delete a Restaurant
 app.delete("/restaurant/delete/:id", async (req,res)=>{
     try {
         
-        const {restaurantid} = req.params;
-        const deleteRestaurant = await pool.query("DELETE FROM tableRestaurant WHERE restaurantid = $1",[restaurantid]);
+        const {id} = req.params;
+        const deleteRestaurant = await pool.query("DELETE FROM tableRestaurant WHERE restaurant_id = $1",[id]);
         res.json("Restaurant was deleted");
         
     } catch (err) {
@@ -290,37 +229,78 @@ app.delete("/restaurant/delete/:id", async (req,res)=>{
     }
 })
 
-//DELETE Reviews
-app.delete("/review/delete/:id",async (req, res)=>{
+//GET A Specific Resturant's Details
+app.get("/restaurant/get/:id", async (req,res) => {
+
+    //RIGHT Join
     try {
 
-        //Delete a Restaurant and All Reviews Related to it
+        const {id} = req.params
+        const getRestaurant = await pool.query("SELECT restaurantname from tableRestaurant WHERE restaurant_id = $1",[id]);
+        res.json(getRestaurant.rows[0]);
+    } catch (err) {
+        console.error(err.message)
+    }
+
+})
+
+//GET All The Reviews Related to a Specific Restaurant
+app.get("/restaurant/get/reviews/:id", async (req,res) => {
+
+    //RIGHT Join
+    try {
+
+        const {id} = req.params
+        const allspecificreview = await pool.query("select * from tableRestaurant a left join  tablereview b on a.restaurant_id = b.restaurant_id WHERE a.restaurant_id = $1;",[id]);
+        res.json(allspecificreview.rows);
+    } catch (err) {
+        console.error(err.message)
+    }
+
+})
+
+//Get All the Reviews for a Specific Resturant by a Specific Customer
+// SELECT  * FROM  tablereview i 	LEFT JOIN tableRestaurant r	ON r.restaurant_id = i.restaurant_id	LEFT JOIN tableuser u	ON u.user_id = i.user_id  WHERE i.user_id = $1;
+
+app.get("/restaurant/get/reviews/:id/specific", authorize,async (req,res) => {
+
+    //RIGHT Join
+    try {
+
+        const {id} = req.params
+        const specificreview = await pool.query("SELECT * FROM  tablereview i LEFT JOIN tableRestaurant r	ON r.restaurant_id = i.restaurant_id LEFT JOIN tableuser u ON u.user_id = i.user_id WHERE i.user_id = $1 AND i.restaurant_id = $2;",[req.user.id, id]);
+        res.json(specificreview.rows);
+    } catch (err) {
+        console.error(err.message)
+    }
+
+})
+
+
+//Add a Review to a Specific Restaurant
+app.post("/restaurant/:id/review/add", authorize, async(req,res)=>{
+    try {
+
+        const {name, review , rating } = req.body;
         const {id} = req.params;
-        const deletereview = await pool.query("DELETE FROM tableReview WHERE reviewid = $1 ",[id]);
-        res.json("Review  was deleted");
+
+        const newtableB = await pool.query("INSERT INTO tablereview (user_id, restaurant_id ,name, review , rating) values ($1, $2, $3, $4, $5) RETURNING * ",
+        [req.user.id, id, name, review , rating]);
+  
+        res.json(newtableB.rows[0]);
+
         
     } catch (err) {
 
         console.error(err.message)
-
-    }
-})
-
-// Get All Customers & Editors(GET)
-app.get("/admin/get/all", async (req,res)=>{
-    try {
-
-        const allUsers = await pool.query("SELECT * FROM tableUser WHERE role ='Customer' AND role='Editor'");
-        res.json(allUsers.rows);
-        
-    } catch (err) {
-        console.error(err.message)
         
     }
 })
-// Add Editor(POST)
+
+//Add Editor
 app.post("/admin/addeditor",[check("email", "Please Provide a Valid Email").isEmail()
-,check("password","Provide a Password with a Minimum of 6 Characters").isLength({ min: 6})] , jwtAuth, async (req,res)=>{
+,check("password","Provide a Password with a Minimum of 6 Characters").isLength({ min: 6})] ,async (req,res)=>{
+
     try {
 
         const{name, surname, age , email, password} = req.body
@@ -333,77 +313,33 @@ app.post("/admin/addeditor",[check("email", "Please Provide a Valid Email").isEm
         }
 
         //Validation Check to Ensure that A User Already Exists
-        const presentuser = await pool.query("SELECT * FROM tableUser WHERE email = $1", [email]);
+        const presentuser = await pool.query("SELECT * FROM tableuser WHERE email = $1", [email]);
 
         if (presentuser.rows.length !== 0) {
-               return res.status(401).json("User already exist!");
+            return res.status(401).json("User already exist!");
         }
    
-        let hashedpassword = await bcrypt.hash(password, 10)
+        const hashedpassword = await bcrypt.hash(password, 10)
    
         // To do auto Increments with INSERT SET THE VALUE TO NULL and Leave it OUT
-        const users = await pool.query("INSERT INTO tableUser (name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Editor') RETURNING *", [name, surname, age, email, hashedpassword ]);
+        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Editor') RETURNING *", [name, surname, age, email, hashedpassword ]);
            
-        res.json(users.rows[0]);
-        
+        console.log(email, password)
+         
+        const jwtToken = jwtGenerator(newUser.rows[0].user_id);
 
-        
-    } catch (err) {
-        console.error(err.message)
-        
-    }
-})
-
-
-// Delete Customer and all there Reviews(DELETE)
-// Use userid
-app.delete("/admin/delete/customer/:id", async (req,res)=>{
-    try {
-        
-        const {userid} = req.params;
-        const deleteCutomer = await pool.query("DELETE FROM tableUser WHERE userid = $1",[userid]);
-        res.json("User was deleted");
-        
-    } catch (err) {
-        console.error(err.message)
-        
-    }
-})
-
-//Add Reviews
-//VERY SPECIAL , WATCH THIS ONE FOR TESTING
-app.post("/restaurant/:idA/:idB/review/add", async(req,res)=>{
-    try {
-
-        const {name, review , rating } = req.body;
-        const {idA, idB} = req.params;
-
-        const newtableB = await pool.query("INSERT INTO tableReview (userid, restaurantid ,name, review , rating) values ($1, $2, $3, $4, $5) RETURNING * ",
-        [idA, idB, name, review , rating]);
-  
-        res.json(newtableB.rows[0]);
+        return res.json({ jwtToken });
 
         
     } catch (err) {
 
         console.error(err.message)
-        
     }
+
 })
 
-
-//JWT GENERATOR
-function jwtGenerator(userid){
-    const payload = {
-        user:{
-            id:userid
-        }
-    }
-
-    return jwt.sign(payload, "MEGARANGER123", { expiresIn: "5h" })
-}
 
 app.listen(5000, () =>{
 
-    console.log("server is up and listening to port 5000");
+    console.log(" Port 5000 Is Open for Use");
 });

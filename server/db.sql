@@ -44,51 +44,21 @@ CREATE Table tableReview(
 DROP table tableReview;
 
 
-CREATE Table testusers(
-    usersid BIGSERIAL NOT NULL PRIMARY KEY ,
-    firstname VARCHAR(255) NOT NULL,
-    lastname VARCHAR(255) NOT NULL
-);
 
-CREATE Table testlocation(
-    loactionid BIGSERIAL NOT NULL PRIMARY KEY ,
-    locationname VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL
-);
-
-
-CREATE Table testreview(
-    reviewid BIGSERIAL NOT NULL PRIMARY KEY ,
-    usersid BIGINT REFERENCES testusers(usersid) ON DELETE CASCADE,
-    loactionid BIGINT REFERENCES testlocation(loactionid) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    review TEXT NOT NULL,
-    rating INT NOT NULL check(rating >=1 and rating <=5)
-);
-
-DROP TABLE tableC ;
 
 
 INSERT INTO tableUser (name , surname, age , email, password,  role) VALUES ('Ed', 'Boon', 32 , 'EdBoon123@gmail.com','Boon123','Admin')
 
 -- Confirmed the Cascading Deletes Work 
-INSERT INTO testusers(firstname , lastname)  VALUES('Ace','Burn');
-INSERT INTO testusers(firstname , lastname)  VALUES('Spade','Splash');
-INSERT INTO testusers(firstname , lastname)  VALUES('Club','Crust');
-INSERT INTO testusers(firstname , lastname)  VALUES('Diamond','Gust');
 
-INSERT INTO tableRestaurant(restaurantname, location, pricerange) VALUES('KFC', 'Mexico', 5);
-INSERT INTO tableRestaurant(restaurantname, location, pricerange) VALUES('Wendys Max', 'South Africa', 3);
-INSERT INTO tableRestaurant(restaurantname, location, pricerange) VALUES('Romans Pizza', 'Italy', 4);
--- test data
-INSERT INTO testlocation(locationname , country) VALUES('Effile Tower', 'France');
-INSERT INTO testlocation(locationname , country) VALUES('Stock Building', 'New York');
-INSERT INTO testlocation(locationname , country) VALUES('Akihabara', 'Japan');
 
-INSERT INTO testreview(usersid, loactionid,name, review, rating) VALUES(4,1,'Diamond','Super Cool', 5);
-INSERT INTO testreview(usersid, loactionid,name, review, rating) VALUES(4,2,'Diamond','Tres Bien', 5);
-INSERT INTO testreview(usersid, loactionid,name, review, rating) VALUES(4,3,'Diamond','The Big Apple Shines',5);
-INSERT INTO testreview(usersid, loactionid,name, review, rating) VALUES(4,4,'Diamond','Super Shiny Robots', 5);
+
+-- Review Data
+
+
+INSERT INTO tableReview(userid, restaurantid,name, review, rating) VALUES(2,1,'Sarah','Not Really a Chicken Gall', 2);
+INSERT INTO tableReview(userid, restaurantid,name, review, rating) VALUES(2,2,'Sarah','Memes 10/10', 5);
+INSERT INTO tableReview(userid, restaurantid,name, review, rating) VALUES(2,3,'Sarah','Pizza Was Hot so thats something',3);
 
 -- DELETE Function
 

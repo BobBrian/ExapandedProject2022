@@ -1,6 +1,6 @@
 import React,{Fragment, useState} from 'react'
-import { Link, Redirect } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
+import { Link } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const Register = ({setAuth}) => {
 
@@ -23,9 +23,9 @@ const Register = ({setAuth}) => {
       });
 
       const parseData = await response.json()
-      if(parseData.token){
+      if(parseRes.jwtToken){
         
-        localStorage.setItem("token", parseData.token)
+        localStorage.setItem("token", parseData.jwtToken);
         setAuth(true)
         toast.success("Login Succesfull")
     
@@ -46,19 +46,19 @@ const Register = ({setAuth}) => {
     <Fragment>
        <h1>Register Page</h1>
        <form>
-            <input type="text" name="name" value={name} placeholder="name" 
+            <input type="text" name="name" value={name} placeholder="Name" 
             onChange={e => setName(e.target.value)} className="form-control my-3"/>
 
-            <input type="text" name="name" value={surname} placeholder="name" 
+            <input type="text" name="surname" value={surname} placeholder="Surname" 
             onChange={e => setSurname(e.target.value)} className="form-control my-3"/>
 
-            <input type="text" name="name" value={age} placeholder="name" 
+            <input type="text" name="age" value={age} placeholder="Age" 
             onChange={e => setAge(e.target.value)} className="form-control my-3"/>
 
-           <input type="text" name="email" value={email} placeholder="email" 
+           <input type="text" name="email" value={email} placeholder="Email" 
            onChange={e => setEmail(e.target.value)} className="form-control my-3"/>
 
-           <input type="password" name="password" value={password} placeholder="password" 
+           <input type="password" name="password" value={password} placeholder="Password" 
            onChange={e => setPassword(e.target.value)} className="form-control my-3"/>
            
            <button onClick={handleSubmit} type="submit" className="btn btn-success btn-block" > Register </button>

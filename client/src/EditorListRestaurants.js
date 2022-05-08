@@ -1,14 +1,13 @@
-import React, {useEffect,Fragment, useContext}from 'react'
-import React, {useEffect, useState, Fragment, useContext}from 'react'
-import UserContext from '.../Context/UserContext'
+import React, {useEffect,  Fragment, useContext}from 'react'
+import {useHistory} from "react-router-dom"
+import { UserContext } from './Context/UserContext';
+import EditorEditTableData from './EditorEditTableData';
 
+function EditorListRestaurants() {
 
-
-function AdminListRestaurants() {
   const {rest, setRest} = useContext(UserContext)
 
-
-
+  let history = useHistory()
 
   useEffect(() =>{
     
@@ -28,6 +27,7 @@ function AdminListRestaurants() {
 
   };
 
+
   const deleterestaurant = async (id) =>
   {
     try {
@@ -41,9 +41,11 @@ function AdminListRestaurants() {
     }
   }
 
+  const editortabledetails = (id) =>{
+    history.push(`/list/editor/restaurant/details/${id}`)
+  }
 
-
-return (
+  return (
     <Fragment>
         <table className='table table-hover table-dark'>
             <thead>
@@ -51,22 +53,28 @@ return (
                     <th>Restaurant</th>
                     <th>Location</th>
                     <th>Price Range</th>
+                    <th>Details</th>
+                    <th>Edit</th>
                     <th>Delete</th>
                 </tr>  
             </thead>
             <tbody>
                 {rest.map(restX =>(
-                    <tr key={restX.restaurantid}>
+                    <tr key={restX.restaurant_id}>
                         <td>{restX.restaurantname}</td>
                         <td>{restX.location}</td>
                         <td>{"$".repeat(restX.pricerange)}</td>
-                        <td><button className='btn btn-danger' onClick={(e) => deleterestaurant(restX.restaurantid)}>Delete</button></td>
+                        <td><button className='btn btn-warning' onClick={() => editortabledetails(restX.restaurant_id)} > Details</button></td>
+                        <td> <EditorEditTableData restX={restX}/> </td>
+                        <td><button className='btn btn-danger' onClick={(e) => deleterestaurant(restX.restaurant_id)}>Delete</button></td>
                     </tr>
                 ))}
+
             </tbody>
+
         </table>
     </Fragment>
   )
 }
 
-export default AdminListRestaurants
+export default EditorListRestaurants

@@ -10,13 +10,13 @@ export const UserProvider = ({children}) => {
 
     const [user, setUser] = useState([])
 
-    const [selectedrest , setSelectedRest] = useState([])
+    const [selectedrestaurant , setSelectedRestaurant] = useState([])
 
-    const [selectreview, setSelectReview] = useState([])
+    const [selectedreview, setSelectedReview] = useState([])
 
 
     return(
-        <UserContext.Provider value = {{rest, setRest , user, setUser , selectedrest , setSelectedRest, selectreview , setSelectReview }}>
+        <UserContext.Provider value = {{rest, setRest , user, setUser , selectedrestaurant , setSelectedRestaurant, selectedreview , setSelectedReview}}>
             {children}
         </UserContext.Provider>
     )

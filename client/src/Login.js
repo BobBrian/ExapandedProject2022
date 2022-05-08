@@ -1,6 +1,6 @@
 import React,{Fragment ,useState} from 'react'
-import { Link, Redirect } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
+import { Link} from "react-router-dom";
+import { toast} from 'react-toastify';
 
 const Login = ({setAuth}) => {
 
@@ -18,16 +18,15 @@ const Login = ({setAuth}) => {
             });
 
             const parseRes = await response.json()
-            if(parseRes.token){
-                //console.log(parsRes)
-                localStorage.setItem("token", parseRes.token)
+            if (parseRes.jwtToken) {
+                localStorage.setItem("token", parseRes.jwtToken);
                 setAuth(true);
-                toast.success("Login Succesfull")
+                toast.success("Logged in Successfully");
+            } else {
+                setAuth(false);
+                toast.error(parseRes);
+            }  
             
-            }else{
-                setAuth(false)
-                toast.error(parseRes)
-            }   
         } catch (err) {
             console.error(err.message)    
         }
@@ -39,10 +38,10 @@ const Login = ({setAuth}) => {
         <Fragment>
             <h1>Login Page</h1>
             <form>
-                <input type="text" name="email" value={email} placeholder="email" 
+                <input type="text" name="email" value={email} placeholder="Email" 
                 onChange={e => setEmail(e.target.value)} className="form-control my-3"/>
 
-                <input type="password" name="password" value={password} placeholder="password" 
+                <input type="password" name="password" value={password} placeholder="Password" 
                 onChange={e => setPassword(e.target.value)} className="form-control my-3"/>
                 
                 <button onClick={handleLogin} type="submit" className="btn btn-success btn-block" > Login</button>

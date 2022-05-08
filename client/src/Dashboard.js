@@ -1,55 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React,{Fragment , useState , useEffect} from 'react'
 import { toast } from "react-toastify";
-import AdminDashboard from "./Components/admin/AdminDashboard";
-import CustomerDashboard from "./Components/customer/CustomerDashboard";
-import EditorDashboard from "./Components/editor/EditorDashboard";
+import Admin from './Admin';
+import Customer from './Customer';
+import Editor from './Editor';
 
 
-//This will serve as the central topbar for all the indicual landing pages before going back to the extra pages
-//Basically When you Login In your reirected and then filtered into the various assorted Dashboards based 
-//on the role.
 
 function Dashboard({ setAuth}) {
 
-  const [role, setRole] = useState("");
+  const [name, setName] = useState("")
+  const [role, setRole] = useState("")
 
-  const getRole = async () => {
+  //This Routes actually Work
+  const  getName = async () =>{
     try {
-      const res = await fetch("http://localhost:5000/restaurant/getrole", {
-        method: "GET",
-        headers: {token: localStorage.token}
-      });
-      const parseData = await res.json();
-      setRole(parseData.role);
+        const response = await fetch("http://localhost:5000/res/dashboard/name",{
+            method: "GET",
+            headers: { jwt_token: localStorage.token }
+        })
+        const parseRes = await response.json()
+        setName(parseRes.name)
     } catch (err) {
-      console.error(err.message);
+        console.error(err.message)
     }
-  };
+  }
 
+  //This Routes actually Work
+  const  getRole = async () =>{
+    try {
+        const response = await fetch("http://localhost:5000/res/dashboard/role",{
+            method: "GET",
+            headers: { jwt_token: localStorage.token }
+        })
+        const parseRes = await response.json()
+        setRole(parseRes.role)
+      } catch (err) {
+        console.error(err.message)
+    }
+  }
+  
+
+  useEffect(() =>{
+    getName()
+    getRole()
+  },[])
+    
   const logout = async e => {
     e.preventDefault();
     try {
+
       localStorage.removeItem("token");
       setAuth(false);
       toast.success("Logout successfully");
+
     } catch (err) {
       console.error(err.message);
     }
   };
 
-
-  useEffect(() => {
-    getRole();
-  }, []);
-
   return (
-    <div>
-      <button onClick={e => logout(e)} class="btn btn-primary btn-lg btn-block">Logout </button>
-      {role == "Customer" && <CustomerDashboard/>}
-      {role == "Editor" && <EditorDashboard/>}
-      {role == "Admin" && <AdminDashboard/>}
-    </div>
-  )
+    <Fragment>
+        <div>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light" >
+              <div className="container-fluid">
+                <a className="navbar-brand" href="#"> Welcome {name}</a>
+                <button className="btn btn-primary" onClick={e => logout(e)} >Logout</button>  
+              </div>
+            </nav>
+            
+            {role ==='Customer' && <Customer/>}
+            {role ==='Editor' && <Admin/>}
+            {role ==='Admin' && <Editor/>}
+        </div>
+    </Fragment>
+)
 }
 
 export default Dashboard

@@ -1,15 +1,15 @@
-import React,{Fragment} from 'react'
+import React, { Fragment } from 'react'
 import CustomerListRestaurant from './CustomerListRestaurant'
 
-
-function CustomerDashboard() {
+function Customer() {
   return (
     <Fragment>
       <div>
         <CustomerListRestaurant/>
       </div>
     </Fragment>
+    
   )
 }
 
-export default CustomerDashboard
+export default Customer
