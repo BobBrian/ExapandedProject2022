@@ -83,6 +83,7 @@ function CustomerTableDetails({ setAuth}) {
 
   return (
     <Fragment>
+      
       <nav className="navbar navbar-expand-lg navbar-light bg-light" >
         <div className="container-fluid">
           <a className="navbar-brand" href="#"> Welcome {name}</a>
@@ -94,7 +95,8 @@ function CustomerTableDetails({ setAuth}) {
       </>
       <div className="row row-cols-3 mb-2">
         
-        {selectedreview.map(selectreviewX =>(
+        {selectedreview.length !== 0 &&
+            selectedreview[0].review_id !== null && selectedreview.map(selectreviewX =>(
             <div key={selectreviewX.review_id} className="card text-white bg-primary mb-3 mr-4" style={{ maxWidth: "30%" }}>
                 <div className="card-header d-flex justify-content-between">
                   <span>{selectreviewX.name} </span>
@@ -104,8 +106,6 @@ function CustomerTableDetails({ setAuth}) {
                 </div>
             </div>
         ))}
-      
-      
       </div>
 
       <div>

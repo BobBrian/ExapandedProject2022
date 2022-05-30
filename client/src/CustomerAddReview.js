@@ -82,7 +82,7 @@ function CustomerAddReview() {
             </button>
         </form>
     </div>
-)
+    )
 }
 
 export default CustomerAddReview

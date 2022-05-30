@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import {UserContext} from './Context/UserContext'
 import { toast } from "react-toastify";
 
-function EditorTableDetails() {
+function EditorTableDetails({ setAuth}) {
 
   const {id} = useParams()
 
@@ -73,7 +73,7 @@ function EditorTableDetails() {
       const deleteReview = await fetch(`http://localhost:5000/restaurant/editor/delete/${id}`,{
         method: "DELETE"
       })
-      setSelectedReview(selectedreview.filter(selectedreview => selectedreview.id !== id))
+      setSelectedReview(selectedreview.filter(selectereview => selectereview.review_id !== id))
       
     } catch (err) {
       console.error(err.message)  
@@ -107,11 +107,12 @@ function EditorTableDetails() {
        <h2 className="text-center display-1">Reviews for {selectedrestaurant.restaurantname}</h2>
       </>
       <div className="row row-cols-3 mb-2">
-      {selectreview.map(selectreviewX =>(
+      {selectedreview.length !== 0 &&
+            selectedreview[0].review_id !== null && selectedreview.map(selectreviewX =>(
           <div key={selectreviewX.review_id} className="card text-white bg-primary mb-3 mr-4" style={{ maxWidth: "30%" }}>
               <div className="card-header d-flex justify-content-between">
                 <button className='btn btn-warning' onClick={() => deletereview(selectreviewX.reviewid)} > 
-                  Delte Details
+                  Delete Details
                 </button>
               </div>
               <div className="card-header d-flex justify-content-between">

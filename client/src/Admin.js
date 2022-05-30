@@ -4,10 +4,10 @@ import AdminListRestaurants from './AdminListRestaurants'
 
 function Admin() {
   return (
-    <Fragement>
+    <Fragment>
          <AdminAddEditor/>
          <AdminListRestaurants/>
-    </Fragement>
+    </Fragment>
    
   )
 }

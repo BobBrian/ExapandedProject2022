@@ -69,8 +69,8 @@ function Dashboard({ setAuth}) {
             </nav>
             
             {role ==='Customer' && <Customer/>}
-            {role ==='Editor' && <Admin/>}
-            {role ==='Admin' && <Editor/>}
+            {role ==='Editor' && <Editor/>}
+            {role ==='Admin' && <Admin/>}
         </div>
     </Fragment>
 )

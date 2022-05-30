@@ -44,10 +44,10 @@ function AdminAddEditor() {
             <input className="form-control" value={age} onChange={e => setAge(e.target.value)}  type="text" placeholder="age"/>
           </div>
           <div className="col">
-            <input className="form-control" value={email} onChange={e => setEmail(e.target.value)}  type="text" placeholder="location"/>
+            <input className="form-control" value={email} onChange={e => setEmail(e.target.value)}  type="text" placeholder="email"/>
           </div>
           <div className="col">
-            <input className="form-control" value={password} onChange={e => setPassword(e.target.value)}  type="text" placeholder="location"/>
+            <input className="form-control" value={password} onChange={e => setPassword(e.target.value)}  type="text" placeholder="password"/>
           </div>
           <button onClick={handleSubmit} type="submit" className="btn btn-primary" > Add Editor </button>
         </div>

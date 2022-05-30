@@ -44,7 +44,7 @@ app.post("/restaurant/register",[check("email", "Please Provide a Valid Email").
         const hashedpassword = await bcrypt.hash(password, 10)
    
         // To do auto Increments with INSERT SET THE VALUE TO NULL and Leave it OUT
-        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Customer') RETURNING *", [name, surname, age, email, hashedpassword ]);
+        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Editor') RETURNING *", [name, surname, age, email, hashedpassword ]);
            
         console.log(email, password)
          
@@ -76,6 +76,7 @@ app.post("/restaurant/login", async (req,res)=>{
                 ]
             })
         }
+
 
         const validPassword = await bcrypt.compare(
             password,
@@ -229,6 +230,20 @@ app.delete("/restaurant/delete/:id", async (req,res)=>{
     }
 })
 
+//Delete a User
+app.delete("/user/delete/:id", async (req,res)=>{
+    try {
+        
+        const {id} = req.params;
+        const deleteRestaurant = await pool.query("DELETE FROM tableuser WHERE user_id = $1",[id]);
+        res.json("Restaurant was deleted");
+        
+    } catch (err) {
+        console.error(err.message)
+        
+    }
+})
+
 //GET A Specific Resturant's Details
 app.get("/restaurant/get/:id", async (req,res) => {
 
@@ -338,6 +353,45 @@ app.post("/admin/addeditor",[check("email", "Please Provide a Valid Email").isEm
 
 })
 
+app.post("/admin/add",[check("email", "Please Provide a Valid Email").isEmail()
+,check("password","Provide a Password with a Minimum of 6 Characters").isLength({ min: 6})] ,async (req,res)=>{
+
+    try {
+
+        const{name, surname, age , email, password} = req.body
+
+        const errors = validationResult(req)
+        if(!errors.isEmpty()){
+            return res.status(400).json({
+                errors:errors.array()
+            })
+        }
+
+        //Validation Check to Ensure that A User Already Exists
+        const presentuser = await pool.query("SELECT * FROM tableuser WHERE email = $1", [email]);
+
+        if (presentuser.rows.length !== 0) {
+            return res.status(401).json("User already exist!");
+        }
+   
+        const hashedpassword = await bcrypt.hash(password, 10)
+   
+        // To do auto Increments with INSERT SET THE VALUE TO NULL and Leave it OUT
+        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Admin') RETURNING *", [name, surname, age, email, hashedpassword ]);
+           
+        console.log(email, password)
+         
+        const jwtToken = jwtGenerator(newUser.rows[0].user_id);
+
+        return res.json({ jwtToken });
+
+        
+    } catch (err) {
+
+        console.error(err.message)
+    }
+
+})
 
 app.listen(5000, () =>{
 

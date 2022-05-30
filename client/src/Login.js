@@ -46,7 +46,10 @@ const Login = ({setAuth}) => {
                 
                 <button onClick={handleLogin} type="submit" className="btn btn-success btn-block" > Login</button>
             </form>
-            <Link to="/register">Register</Link>
+            <div>
+                
+            </div>
+            <Link to="/register">New to the Website ? Register Now</Link>
         </Fragment>
     )
 }

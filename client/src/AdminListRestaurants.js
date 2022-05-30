@@ -1,13 +1,15 @@
 import React, {useEffect, Fragment, useContext}from 'react'
 import { UserContext } from './Context/UserContext';
 
-function AdminListRestaurants() {
+function AdminListRestaurants({ setAuth}) {
 
 
   const {rest, setRest} = useContext(UserContext)
 
+  const [name, setName] = useState("")
+
   useEffect(() =>{
-    
+    getName();
     getAllRestaurants();
   },[]);
 
@@ -30,17 +32,51 @@ function AdminListRestaurants() {
       const deleteRestaurant = await fetch(`http://localhost:5000/restaurant/delete/${id}`,{
         method: "DELETE"
       })
-      setRest(rest.filter(rest => rest.id !== id))
+      setRest(rest.filter(restaurant => restaurant.restaurant_id !== id))
       
     } catch (err) {
       console.error(err.message)  
     }
   }
 
+  const  getName = async () =>{
+    try {
+        const response = await fetch("http://localhost:5000/res/dashboard/name",{
+          method: "GET",
+          headers: { jwt_token: localStorage.token }
+        })
+        
+        const parseRes = await response.json()
+        setName(parseRes.name)
+        
+    } catch (err) {
+        console.error(err.message)
+        
+    }
+}
+
+  const logout = async e => {
+    e.preventDefault();
+    try {
+
+      localStorage.removeItem("token");
+      setAuth(false);
+      toast.success("Logout successfully");
+
+    } catch (err) {
+      console.error(err.message);
+    }
+};
 
   return (
     <Fragment>
-    <table className='table table-hover table-dark'>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light" >
+          <div className="container-fluid">
+            <a className="navbar-brand" href="#"> Welcome Mr {name}</a>
+            <button className="btn btn-primary" onClick={e => logout(e)} >Logout</button>  
+          </div>
+      </nav>
+     <table className='table table-hover table-dark'>
         <thead>
             <tr className="bg-primary">
                 <th>Restaurant</th>
@@ -50,7 +86,8 @@ function AdminListRestaurants() {
             </tr>  
         </thead>
         <tbody>
-            {rest.map(restX =>(
+            {rest.length !== 0 &&
+              rest[0].restaurant_id !== null && rest.map(restX =>(
                 <tr key={restX.restaurant_id}>
                     <td>{restX.restaurantname}</td>
                     <td>{restX.location}</td>
@@ -59,7 +96,7 @@ function AdminListRestaurants() {
                 </tr>
             ))}
         </tbody>
-    </table>
+     </table>
   </Fragment>
   )
 }

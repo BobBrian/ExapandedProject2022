@@ -1,7 +1,6 @@
 import React, {useEffect,  Fragment, useContext}from 'react'
 import {useHistory} from "react-router-dom"
 import { UserContext } from './Context/UserContext';
-import EditorEditTableData from './EditorEditTableData';
 
 function EditorListRestaurants() {
 
@@ -34,7 +33,7 @@ function EditorListRestaurants() {
       const deleteRestaurant = await fetch(`http://localhost:5000/restaurant/delete/${id}`,{
         method: "DELETE"
       })
-      setRest(rest.filter(rest => rest.id !== id))
+      setRest(rest.filter(restaurant => restaurant.restaurant_id !== id))
       
     } catch (err) {
       console.error(err.message)  
@@ -43,6 +42,10 @@ function EditorListRestaurants() {
 
   const editortabledetails = (id) =>{
     history.push(`/list/editor/restaurant/details/${id}`)
+  }
+
+  const editorupdatetable = (id) =>{
+    history.push(`/list/editor/update/details/${id}`)
   }
 
   return (
@@ -65,7 +68,7 @@ function EditorListRestaurants() {
                         <td>{restX.location}</td>
                         <td>{"$".repeat(restX.pricerange)}</td>
                         <td><button className='btn btn-warning' onClick={() => editortabledetails(restX.restaurant_id)} > Details</button></td>
-                        <td> <EditorEditTableData restX={restX}/> </td>
+                        <td><button className='btn btn-primary' onClick={() => editorupdatetable(restX.restaurant_id)} > Edit </button></td>
                         <td><button className='btn btn-danger' onClick={(e) => deleterestaurant(restX.restaurant_id)}>Delete</button></td>
                     </tr>
                 ))}

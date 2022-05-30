@@ -4,19 +4,19 @@ import { Link } from "react-router-dom";
 const Landing = () => {
   return (
     <div className="jumbotron mt-5">
-      <h1>Welcome to Expanded Project 2022</h1>
-      <p>Sign In and start Reviewing Restaurants</p>
-      <Link to="/login" className="btn btn-primary">
-        Login
+      <h1>Welcome to Resturant Reviewer 200</h1>
+      <h2>Created by Chibuikem Nwauche</h2>
+
+      <Link to="/login" >
+         <button type="button">
+          Login Into Your
+        </button>
       </Link>
-      <div>
-        
-      </div>
-      <div>
-        
-      </div>
-      <Link to="/register" className="btn btn-primary ml-3">
-        Register
+      
+      <Link to="/register" >
+        <button type="button">
+            Create an Account
+        </button>
       </Link>
     </div>
   );
