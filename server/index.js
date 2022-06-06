@@ -44,7 +44,7 @@ app.post("/restaurant/register",[check("email", "Please Provide a Valid Email").
         const hashedpassword = await bcrypt.hash(password, 10)
    
         // To do auto Increments with INSERT SET THE VALUE TO NULL and Leave it OUT
-        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Editor') RETURNING *", [name, surname, age, email, hashedpassword ]);
+        let newUser = await pool.query("INSERT INTO tableuser(name , surname, age , email, password,  role) VALUES ($1, $2, $3 , $4, $5,'Customer') RETURNING *", [name, surname, age, email, hashedpassword ]);
            
         console.log(email, password)
          
@@ -169,11 +169,23 @@ app.get("/restaurant/get/all", async (req,res)=>{
 
 })
 
-//Get all Users
-app.get("/admin/get/all", async (req,res)=>{
+//Get all Editors
+app.get("/admin/get/all/editor", async (req,res)=>{
     try {
 
-        const allUsers = await pool.query("SELECT * FROM tableUser WHERE role ='Customer' AND role ='Editor'");
+        const allUsers = await pool.query("SELECT * FROM tableuser WHERE role ='Editor' ");
+        res.json(allUsers.rows);
+        
+    } catch (err) {
+        console.error(err.message)
+        
+    }
+})
+
+app.get("/admin/get/all/customer", async (req,res)=>{
+    try {
+
+        const allUsers = await pool.query("SELECT * FROM tableuser WHERE role ='Customer' ");
         res.json(allUsers.rows);
         
     } catch (err) {
@@ -231,7 +243,7 @@ app.delete("/restaurant/delete/:id", async (req,res)=>{
 })
 
 //Delete a User
-app.delete("/user/delete/:id", async (req,res)=>{
+app.delete("/admin/delete/:id", async (req,res)=>{
     try {
         
         const {id} = req.params;

@@ -45,7 +45,7 @@ function CustomerListRestaurant() {
               </tr>  
           </thead>
           <tbody>
-              {rest.map(restX =>(
+              {rest.length !== 0 && rest.map(restX =>(
                   <tr key={restX.restaurant_id}>
                       <td>{restX.restaurantname}</td>
                       <td>{restX.location}</td>

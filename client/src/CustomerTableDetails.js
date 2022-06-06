@@ -94,7 +94,6 @@ function CustomerTableDetails({ setAuth}) {
        <h2 className="text-center display-1">Reviews for {selectedrestaurant.restaurantname}</h2>
       </>
       <div className="row row-cols-3 mb-2">
-        
         {selectedreview.length !== 0 &&
             selectedreview[0].review_id !== null && selectedreview.map(selectreviewX =>(
             <div key={selectreviewX.review_id} className="card text-white bg-primary mb-3 mr-4" style={{ maxWidth: "30%" }}>

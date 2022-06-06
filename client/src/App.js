@@ -9,8 +9,9 @@ import Dashboard from './Dashboard';
 import CustomerTableDetails from './CustomerTableDetails';
 import { UserProvider } from './Context/UserContext';
 import EditorTableDetails from './EditorTableDetails';
-import AdminListRestaurants from './AdminListRestaurants';
 import EditorEditTableData from './EditorEditTableData';
+import AdminListEditor from './AdminListEditor';
+import AdminListCustomer from './AdminListCustomer';
 
 toast.configure();
 //used for the main routing
@@ -138,10 +139,22 @@ function App  ()  {
 
             <Route
               exact
-              path="/admin/get/all"
+              path="/admin/get/all/editor"
               render={props =>
                 isAuthenticated ? (
-                  <AdminListRestaurants {...props} setAuth={setAuth} />
+                  <AdminListEditor {...props} setAuth={setAuth} />
+                ) : (
+                  <Redirect to="/login" />
+                )
+              }
+            /> 
+
+  	        <Route
+              exact
+              path="/admin/get/all/customer"
+              render={props =>
+                isAuthenticated ? (
+                  <AdminListCustomer {...props} setAuth={setAuth} />
                 ) : (
                   <Redirect to="/login" />
                 )

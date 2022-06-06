@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 const Landing = () => {
   return (
     <div className="jumbotron mt-5">
-      <h1>Welcome to Resturant Reviewer 200</h1>
+      <h1>Welcome to Resturant Reviewer 2022</h1>
       <h2>Created by Chibuikem Nwauche</h2>
 
       <Link to="/login" >
          <button type="button">
-          Login Into Your
+          Login Into Your Account 
         </button>
       </Link>
       

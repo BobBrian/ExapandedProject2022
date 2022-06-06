@@ -1,12 +1,17 @@
-import React, {useEffect, Fragment, useContext}from 'react'
+import React, {useEffect, Fragment, useContext , useState}from 'react'
 import { UserContext } from './Context/UserContext';
 
-function AdminListRestaurants({ setAuth}) {
+import {useHistory} from "react-router-dom"
+
+
+function AdminListRestaurants() {
 
 
   const {rest, setRest} = useContext(UserContext)
 
   const [name, setName] = useState("")
+
+  let history = useHistory()
 
   useEffect(() =>{
     getName();
@@ -53,27 +58,25 @@ function AdminListRestaurants({ setAuth}) {
         console.error(err.message)
         
     }
-}
+ }
 
-  const logout = async e => {
-    e.preventDefault();
-    try {
+ const listeditor = () =>{
+    history.push('/admin/get/all/editor')
+ }
 
-      localStorage.removeItem("token");
-      setAuth(false);
-      toast.success("Logout successfully");
+ const listcustomer = () =>{
+  history.push('/admin/get/all/customer')
+ }
 
-    } catch (err) {
-      console.error(err.message);
-    }
-};
+  
 
   return (
     <Fragment>
       <nav className="navbar navbar-expand-lg navbar-light bg-light" >
           <div className="container-fluid">
             <a className="navbar-brand" href="#"> Welcome Mr {name}</a>
-            <button className="btn btn-primary" onClick={e => logout(e)} >Logout</button>  
+            <button className='btn btn-warning' onClick={() => listeditor()} > List Editors</button>  
+            <button className='btn btn-warning' onClick={() => listcustomer()} > List Customers</button> 
           </div>
       </nav>
      <table className='table table-hover table-dark'>
